@@ -18,5 +18,13 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        // 运行各个表的种子文件
+        $this->call([
+            AccountSeeder::class,
+            FinancialCategorySeeder::class,
+            TransactionSeeder::class,
+            BudgetSeeder::class,
+        ]);
     }
 }
