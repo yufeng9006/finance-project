@@ -80,11 +80,26 @@ class TransactionController extends Controller
         $totalIncome = Transaction::where('type', 'income')->sum('amount');
         $totalExpense = Transaction::where('type', 'expense')->sum('amount');
         $balance = $totalIncome - $totalExpense;
+        
+        // 获取最新的5条交易记录
+        $recentTransactions = Transaction::with(['account', 'category'])
+            ->orderBy('transaction_date', 'desc')
+            ->limit(5)
+            ->get();
+        
+        // 按分类统计支出
+        $expenseByCategory = Transaction::selectRaw('category_id, SUM(amount) as total')
+            ->with('category')
+            ->where('type', 'expense')
+            ->groupBy('category_id')
+            ->get();
 
         return response()->json([
             'total_income' => $totalIncome,
             'total_expense' => $totalExpense,
-            'balance' => $balance
+            'balance' => $balance,
+            'recent_transactions' => $recentTransactions,
+            'expense_by_category' => $expenseByCategory
         ]);
     }
 }

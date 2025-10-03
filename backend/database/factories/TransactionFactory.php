@@ -27,7 +27,7 @@ class TransactionFactory extends Factory
             'amount' => $this->faker->randomFloat(2, 1, 1000),
             'description' => $this->faker->sentence(),
             'transaction_date' => $this->faker->dateTimeThisYear(),
-            'type' => $category->type,
+            'type' => $category->type, // 从分类中获取交易类型，确保一致性
         ];
     }
 }

@@ -6,11 +6,16 @@ const accounts = ref([])
 const categories = ref([])
 const transactions = ref([])
 const budgets = ref([])
+const summary = ref({
+  total_income: 0,
+  total_expense: 0,
+  balance: 0
+})
 
 // 获取账户数据
 const fetchAccounts = async () => {
   try {
-    // 这里应该是实际的API调用
+    // 实际项目中应该使用真实的API调用
     // const response = await fetch('/api/accounts')
     // accounts.value = await response.json()
     accounts.value = [
@@ -26,7 +31,7 @@ const fetchAccounts = async () => {
 // 获取分类数据
 const fetchCategories = async () => {
   try {
-    // 这里应该是实际的API调用
+    // 实际项目中应该使用真实的API调用
     // const response = await fetch('/api/categories')
     // categories.value = await response.json()
     categories.value = [
@@ -42,7 +47,7 @@ const fetchCategories = async () => {
 // 获取交易数据
 const fetchTransactions = async () => {
   try {
-    // 这里应该是实际的API调用
+    // 实际项目中应该使用真实的API调用
     // const response = await fetch('/api/transactions')
     // transactions.value = await response.json()
     transactions.value = [
@@ -58,7 +63,7 @@ const fetchTransactions = async () => {
 // 获取预算数据
 const fetchBudgets = async () => {
   try {
-    // 这里应该是实际的API调用
+    // 实际项目中应该使用真实的API调用
     // const response = await fetch('/api/budgets')
     // budgets.value = await response.json()
     budgets.value = [
@@ -70,7 +75,23 @@ const fetchBudgets = async () => {
   }
 }
 
-// 计算总览数据
+// 获取统计摘要数据
+const fetchSummary = async () => {
+  try {
+    // 实际项目中应该使用真实的API调用
+    // const response = await fetch('/api/dashboard/summary')
+    // summary.value = await response.json()
+    summary.value = {
+      total_income: 10000.00,
+      total_expense: 70.00,
+      balance: 9930.00
+    }
+  } catch (error) {
+    console.error('获取统计摘要失败:', error)
+  }
+}
+
+// 计算总览数据（用于演示）
 const calculateSummary = () => {
   const totalIncome = transactions.value
     .filter(t => t.type === 'income')
@@ -91,6 +112,7 @@ onMounted(() => {
   fetchCategories()
   fetchTransactions()
   fetchBudgets()
+  fetchSummary()
 })
 </script>
 
@@ -106,15 +128,15 @@ onMounted(() => {
         <div class="summary-cards">
           <div class="summary-card">
             <h3>总收入</h3>
-            <p class="amount income">¥{{ calculateSummary().totalIncome.toFixed(2) }}</p>
+            <p class="amount income">¥{{ summary.total_income.toFixed(2) }}</p>
           </div>
           <div class="summary-card">
             <h3>总支出</h3>
-            <p class="amount expense">¥{{ calculateSummary().totalExpense.toFixed(2) }}</p>
+            <p class="amount expense">¥{{ summary.total_expense.toFixed(2) }}</p>
           </div>
           <div class="summary-card">
             <h3>账户余额</h3>
-            <p class="amount balance">¥{{ calculateSummary().balance.toFixed(2) }}</p>
+            <p class="amount balance">¥{{ summary.balance.toFixed(2) }}</p>
           </div>
         </div>
       </section>
