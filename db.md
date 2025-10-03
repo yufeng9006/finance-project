@@ -1,86 +1,112 @@
-# 数据库说明
+# 数据库说明文档
 
-## 数据库名称
+## 数据库基本信息
 
-home_finance_system
+- 数据库名称: home_finance_system
+- 字符集: utf8mb4
+- 排序规则: utf8mb4_unicode_ci
 
-## 数据库设置步骤
+## 数据表结构
 
-1. 确保 MySQL 服务正在运行:
-   ```
-   sudo service mysql start
-   ```
-   或在 macOS 上:
-   ```
-   brew services start mysql
-   ```
-
-2. 登录 MySQL:
-   ```
-   mysql -u root -p
-   ```
-
-3. 创建数据库:
-   ```sql
-   CREATE DATABASE home_finance_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   ```
-
-4. 创建用户并授权(可选):
-   ```sql
-   CREATE USER 'finance_user'@'localhost' IDENTIFIED BY 'finance_password';
-   GRANT ALL PRIVILEGES ON home_finance_system.* TO 'finance_user'@'localhost';
-   FLUSH PRIVILEGES;
-   ```
-
-## 数据库表结构
-
-### financial_categories 表 - 财务分类表
-存储收入和支出的分类信息
+### users 表
+用户表，存储系统用户信息
 
 字段:
-- id: 主键
-- name: 分类名称
-- description: 分类描述
-- type: 类型 (income - 收入, expense - 支出)
-- created_at: 创建时间
-- updated_at: 更新时间
+- id: bigint unsigned, 主键, 自增
+- name: varchar(255), 用户名
+- email: varchar(255), 邮箱, 唯一
+- email_verified_at: timestamp, 邮箱验证时间
+- password: varchar(255), 密码
+- remember_token: varchar(100), 记住我令牌
+- created_at: timestamp, 创建时间
+- updated_at: timestamp, 更新时间
 
-### accounts 表 - 账户表
-存储不同类型的账户信息
-
-字段:
-- id: 主键
-- name: 账户名称
-- type: 账户类型 (如现金、银行账户、信用卡等)
-- balance: 账户余额
-- description: 账户描述
-- is_active: 是否激活
-- created_at: 创建时间
-- updated_at: 更新时间
-
-### transactions 表 - 交易记录表
-存储所有的收入和支出交易记录
+### password_reset_tokens 表
+密码重置令牌表
 
 字段:
-- id: 主键
-- account_id: 关联账户ID
-- category_id: 关联分类ID
-- amount: 交易金额
-- description: 交易描述
-- transaction_date: 交易日期
-- type: 交易类型 (income - 收入, expense - 支出)
-- created_at: 创建时间
-- updated_at: 更新时间
+- email: varchar(255), 邮箱, 主键
+- token: varchar(255), 令牌
+- created_at: timestamp, 创建时间
 
-### budgets 表 - 预算表
-存储预算信息
+### failed_jobs 表
+失败任务表
 
 字段:
-- id: 主键
-- category_id: 关联分类ID
-- amount: 预算金额
-- start_date: 预算开始日期
-- end_date: 预算结束日期
-- description: 预算描述
-- created_at: 创建时间
-- updated_at: 更新时间
+- id: bigint unsigned, 主键, 自增
+- uuid: varchar(255), UUID, 唯一
+- connection: text, 连接信息
+- queue: text, 队列名称
+- payload: longtext, 任务数据
+- exception: longtext, 异常信息
+- failed_at: timestamp, 失败时间, 默认当前时间
+
+### personal_access_tokens 表
+个人访问令牌表
+
+字段:
+- id: bigint unsigned, 主键, 自增
+- tokenable_type: varchar(255), 可令牌化类型
+- tokenable_id: bigint unsigned, 可令牌化ID
+- name: varchar(255), 令牌名称
+- token: varchar(64), 令牌, 唯一
+- abilities: text, 权限
+- last_used_at: timestamp, 最后使用时间
+- expires_at: timestamp, 过期时间
+- created_at: timestamp, 创建时间
+- updated_at: timestamp, 更新时间
+
+### financial_categories 表
+财务分类表
+
+字段:
+- id: bigint unsigned, 主键, 自增
+- name: varchar(255), 分类名称
+- type: enum('income','expense'), 分类类型(收入/支出)
+- icon: varchar(255), 图标
+- color: varchar(255), 颜色
+- parent_id: bigint unsigned, 父级分类ID
+- is_active: tinyint(1), 是否启用, 默认1
+- created_at: timestamp, 创建时间
+- updated_at: timestamp, 更新时间
+
+### accounts 表
+账户表
+
+字段:
+- id: bigint unsigned, 主键, 自增
+- name: varchar(255), 账户名称
+- type: varchar(255), 账户类型
+- balance: decimal(15,2), 余额, 默认0.00
+- description: text, 描述
+- is_active: tinyint(1), 是否启用, 默认1
+- created_at: timestamp, 创建时间
+- updated_at: timestamp, 更新时间
+
+### transactions 表
+交易记录表
+
+字段:
+- id: bigint unsigned, 主键, 自增
+- account_id: bigint unsigned, 账户ID, 外键(accounts.id)
+- category_id: bigint unsigned, 分类ID, 外键(financial_categories.id)
+- type: enum('income','expense'), 交易类型(收入/支出)
+- amount: decimal(15,2), 金额
+- description: text, 描述
+- occurred_at: timestamp, 交易时间
+- created_at: timestamp, 创建时间
+- updated_at: timestamp, 更新时间
+
+### budgets 表
+预算表
+
+字段:
+- id: bigint unsigned, 主键, 自增
+- category_id: bigint unsigned, 分类ID, 外键(financial_categories.id)
+- amount: decimal(15,2), 预算金额
+- period: enum('daily','weekly','monthly','yearly'), 预算周期
+- start_date: date, 开始日期
+- end_date: date, 结束日期
+- is_active: tinyint(1), 是否启用, 默认1
+- created_at: timestamp, 创建时间
+- updated_at: timestamp, 更新时间

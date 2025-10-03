@@ -10,9 +10,9 @@ class Account extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * 可批量赋值的属性
      *
-     * @var array<int, string>
+     * @var array
      */
     protected $fillable = [
         'name',
@@ -23,9 +23,9 @@ class Account extends Model
     ];
 
     /**
-     * The attributes that should be cast.
+     * 属性类型转换
      *
-     * @var array<string, string>
+     * @var array
      */
     protected $casts = [
         'balance' => 'decimal:2',
@@ -33,10 +33,12 @@ class Account extends Model
     ];
 
     /**
-     * Get the transactions for the account.
+     * 应该被隐藏的属性
+     *
+     * @var array
      */
-    public function transactions()
-    {
-        return $this->hasMany(Transaction::class);
-    }
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }
