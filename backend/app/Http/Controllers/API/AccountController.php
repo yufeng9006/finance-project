@@ -16,6 +16,7 @@ class AccountController extends Controller
      */
     public function index()
     {
+        \Log::info('AccountController@index called'); // 添加日志
         $accounts = Account::where('is_active', true)->get();
         return $this->success($accounts, '账户列表获取成功');
     }

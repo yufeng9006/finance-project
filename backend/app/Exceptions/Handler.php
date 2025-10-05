@@ -27,4 +27,14 @@ class Handler extends ExceptionHandler
             //
         });
     }
+    
+    // 添加异常断点处理
+    public function report(Throwable $exception)
+    {
+        if ($this->shouldReport($exception)) {
+            \Log::error('Exception occurred: ' . $exception->getMessage());
+        }
+        
+        parent::report($exception);
+    }
 }

@@ -23,17 +23,23 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 // 登录路由
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
-// 需要认证的路由组
+// Xdebug测试路由
+Route::get('/test-debug', function () {
+    \Log::info('Xdebug test route accessed');
+    xdebug_break(); // 强制断点
+    return response()->json(['message' => 'Xdebug test successful']);
+});
+
+// 允许未认证访问 accounts 路由（仅用于调试）
+Route::apiResource('accounts', AccountController::class);
+
+// 保留其他需要认证的路由
 Route::middleware('auth:sanctum')->group(function () {
-    // 获取认证用户信息
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
 
-    // 登出路由
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
 
-    // 账户相关路由
-    Route::apiResource('accounts', AccountController::class);
     Route::get('/accounts/{id}/balance', [AccountController::class, 'balance']);
 });
